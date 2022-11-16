@@ -107,10 +107,11 @@ def encr(entrym0):
           key = Fernet.generate_key()
           messagebox.showinfo('Info','Choose location to store new key')
           keyloc = filedialog.askdirectory()
+          print(keyloc)
           pat = entrym0.get()
           path = pat.lstrip('Directory: ')
-          kname = path.split('/')[-2]
-          with open(keyloc + kname + '.dat','wb') as l:
+          kname = path.split('/')[-1]
+          with open(keyloc +'/' + kname + '.dat','wb') as l:
               pickle.dump(key,l)
           
           for (root,dirs, files) in os.walk(path):
