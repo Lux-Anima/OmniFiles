@@ -79,24 +79,73 @@ def deleteme():
         print ("I'm Not Deleted Yet")
     
    
-def encr():
-    key = Fernet.generate_key()
-    print(key)
-    print(delf)
-    for i in delf:
-        if '.txt' in i:
-
-         with open(path2 + 'TheOneKey.dat','wb') as l:
-             pickle.dump(key,l)
-         with open(i,'rb+') as f:
-            x = f.read()            
-            e = Fernet(key)
-            edat = e.encrypt(x)
-            f.seek(0)
-            f.write(edat)
+def encr(entrym0):
+    delf = []
+    result = messagebox.askquestion('Choice','Use already existing key?')
+    if result == 'yes':
+        messagebox.showinfo('Info','Choose the location of the key')
+        x = filedialog.askopenfile()
+        pat = entrym0.get()
+        path = pat.lstrip('Directory: ')
+        kname = path.split('/')[-2]
+        keyloc = os.path.abspath(x.name)
+        with open(keyloc ,'rb') as l:
+            key = pickle.load(l)
+        for (root,dirs, files) in os.walk(path):
+            for f in files:
+                delf.append(os.path.join(root, f))
+        for i in delf:
+            with open(i,'rb+') as f:
+                    x = f.read()
+                    e = Fernet(key)
+                    edat = e.encrypt(x)
+                    f.seek(0)
+                    f.write(edat)
             
-        elif '.doc' or '.docx' in i:
-            pass
+    else:
+          delf  = []
+          key = Fernet.generate_key()
+          messagebox.showinfo('Info','Choose location to store new key')
+          keyloc = filedialog.askdirectory()
+          pat = entrym0.get()
+          path = pat.lstrip('Directory: ')
+          kname = path.split('/')[-2]
+          with open(keyloc + kname + '.dat','wb') as l:
+              pickle.dump(key,l)
+          
+          for (root,dirs, files) in os.walk(path):
+              for f in files:
+                  delf.append(os.path.join(root, f))
+          for i in delf:
+              with open(i,'rb+') as f:
+                      x = f.read()
+                      e = Fernet(key)
+                      edat = e.encrypt(x)
+                      f.seek(0)
+                      f.write(edat)
+            
+def decr(entrym0):
+    delf  = []
+    messagebox.showinfo('Info','Choose the location of the key')
+    x = filedialog.askopenfile()
+    keyloc = os.path.abspath(x.name)
+    pat = entrym0.get()
+    path = pat.lstrip('Directory: ')
+    with open(keyloc ,'rb') as l:
+        key = pickle.load(l)
+    
+    for (root,dirs, files) in os.walk(path):
+        for f in files:
+            delf.append(os.path.join(root, f))
+    for i in delf:
+        with open(i,'rb+') as f:
+                x = f.read()
+                e = Fernet(key)
+                edat = e.decrypt(x)
+                f.seek(0)
+                f.truncate()
+                f.write(edat)
+                
 def checking():
     try:
         file = open(r'F:\testing.txt')
@@ -119,23 +168,7 @@ def browseFiles2():
          
        # Change label contents
        label_file_explorer2.configure(text="Directory: "+path2)  
-def decr():
-    with open(path2 + 'TheOneKey.dat','rb') as l:
-           key = pickle.load(l)
-           print(key)
-    for i in delf:
-        if '.txt' in i:
-         with open(i,'r+') as f:
-            x = f.read()
-            print(x)
-            
-            e = Fernet(key)
-            edat = e.decrypt(x)
-            f.seek(0)
-            f.truncate()
-            f.write(edat)
-        elif '.doc' or '.docx' in i:
-            pass
+
 def group(entry3):
     name = entry3.get()
     x = os.getlogin()

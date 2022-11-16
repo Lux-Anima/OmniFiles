@@ -323,7 +323,7 @@ bm1 = Button(fmanage,
     image = imgm1,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = lambda: encr(entrym0),
     relief = "flat")
 
 bm1.place(
@@ -336,7 +336,7 @@ bm2 = Button(fmanage,
     image = imgm2,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = lambda: decr(entrym0),
     relief = "flat")
 
 bm2.place(
