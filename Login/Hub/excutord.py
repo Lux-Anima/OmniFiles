@@ -156,6 +156,7 @@ def browseFiles(entry1):
       
     # Change label contents
     entry1.configure(state= NORMAL)
+    entry1.delete(0,END)
     entry1.insert(0,"Directory: " +path)
     entry1.configure(state= DISABLED)
     
