@@ -45,7 +45,6 @@ def UniSearch(entry2,entry0):
                 except:
                     continue
     
-    print(str(pos))
     entry2.configure(state= NORMAL)
     entry2.insert(1.0,str(pos))
     entry2.configure(state= DISABLED)
@@ -54,7 +53,6 @@ def searchh(entrym0):
     global delf
     delf=[]
     path = entrym0.get().lstrip('Directory: ')
-    print(path)
     #searc = input("Enter search term")
     for (root,dirs, files) in os.walk(path):
         for f in files:
@@ -72,7 +70,6 @@ def deleteme():
     if result == 'yes':
         for i in delf:
            i = i.replace('/','\\')
-           print(i)
            send2trash(i)
         print ("Deleted")
     else:
@@ -107,7 +104,6 @@ def encr(entrym0):
           key = Fernet.generate_key()
           messagebox.showinfo('Info','Choose location to store new key')
           keyloc = filedialog.askdirectory()
-          print(keyloc)
           pat = entrym0.get()
           path = pat.lstrip('Directory: ')
           kname = path.split('/')[-1]
@@ -177,7 +173,39 @@ def group(entry3):
     os.makedirs(dest)
     for i in delf:
         shutil.copy2(i, dest)
-      
+
+
+def addusr(top,window):
+    x = os.getcwd()
+    path = x.rstrip('Hub')
+    rpath = path + r'Register\register.py'
+    top.destroy()
+    window.destroy()
+    os.chdir(path + r'Register')
+    runpy.run_path(path_name = rpath)
+    sys.exit()
+    
+    
+def delusr(top,window):
+    x = os.getcwd()
+    path = x.rstrip('Hub')
+    rpath = path + r'DeleteUser\deluser.py'
+    top.destroy()
+    window.destroy()
+    os.chdir(path + r'DeleteUser')
+    runpy.run_path(path_name = rpath)
+    sys.exit()
+    
+def logout(top,window):
+    dirname = os.getcwd()
+    filen = dirname.rstrip('/Hub')
+    filename = filen + '/login.py'
+    top.destroy()
+    window.destroy()
+    os.chdir(filen)
+    runpy.run_path(path_name = filename)
+    sys.exit()
+
 
 
 

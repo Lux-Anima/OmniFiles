@@ -18,12 +18,9 @@ if not result:
     
     
 
-
-def raise_frame(frame):
-    frame.tkraise()
+x = 0
 
 def btn_clicked():
-    print("Button Clicked")
     uname = entry0.get()
     passwd = entry1.get()
     
@@ -32,11 +29,16 @@ def btn_clicked():
     query = 'select * from otable where username = %s'
     mycursor.execute(query, [(uname)])
     result = mycursor.fetchone()
-    verifp = result[1]
-    che = pbkdf2_sha256.verify(passwd,verifp)
+    try:
+        verifp = result[1]
+        che = pbkdf2_sha256.verify(passwd,verifp)
+    except:
+        che = 0
+
     
     if che:
-        print('sucess')
+        global x
+        x = 1
         de()
         os.chdir(dirname + '/Hub')
         runpy.run_path(path_name = dirname + '/Hub/hub.py' )
@@ -49,7 +51,11 @@ def btn_clicked():
 window = Tk()
 top = Toplevel()
 def de():
+    top.destroy()
     window.destroy()
+    if x == 0:
+        sys.exit()
+
     
 top.protocol('WM_DELETE_WINDOW',de)
 

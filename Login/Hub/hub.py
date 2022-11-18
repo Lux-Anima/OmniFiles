@@ -2,7 +2,7 @@ from tkinter import *
 import runpy
 import os
 from excutord import *
-
+import sys
 
 def btn_clicked():
     print("Button Clicked")
@@ -11,26 +11,42 @@ def switchgroup():
     canvas.coords(r1,0, 183, 0+7, 183+47)
     fmanage.place_forget()
     fsetting.place_forget()
+    fframe.place_forget()
     fgroup.place(x=215, y = 38,width=797,height=432)
     
 def switchmanage():
     canvas.coords(r1,0, 233, 0+7, 233+47)
     fgroup.place_forget()
     fsetting.place_forget()
+    fframe.place_forget()
     fmanage.place(x=215, y = 38,width=797,height=432)
     
 def switchsetting():
     canvas.coords(r1,0, 283, 0+7, 283+47)
     fmanage.place_forget()
     fgroup.place_forget()
+    fframe.place_forget()
     fsetting.place(x=215, y = 38,width=797,height=432)
+    
+def switchabout():
+    fmanage.place_forget()
+    fsetting.place_forget()
+    fgroup.place_forget()
+    canvas.coords(r1,0, 333, 0+7, 333+47)
+    fframe.place(x=215, y = 38,width=797,height=432)
+    
+    
+    
     
 
     
 window = Tk()
 top = Toplevel()
 def de():
+    top.destroy()
     window.destroy()
+    sys.exit()
+
     
 top.protocol('WM_DELETE_WINDOW',de)
 
@@ -97,7 +113,7 @@ b3 = Button(top,
     image = img3,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = switchabout,
     relief = "flat")
 
 b3.place(
@@ -110,7 +126,7 @@ b4 = Button(top,
     image = img4,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = lambda: logout(top,window),
     relief = "flat")
 
 b4.place(
@@ -148,6 +164,7 @@ background = canvas.create_image(
 fgroup = Frame(top,bg = "#ffffff")
 fmanage = Frame(top,bg = "#ffffff")
 fsetting = Frame(top,bg ='#ffffff')
+fframe = Frame(top,bg ='#ffffff')
 
 
 # GROUP FRAME -------------------------------------------------
@@ -394,7 +411,7 @@ bs1 = Button(fsetting,
     image = imgs1,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = lambda: logout(top,window),
     relief = "flat")
 
 bs1.place(
@@ -407,7 +424,7 @@ bs2 = Button(fsetting,
     image = imgs2,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = lambda: addusr(top,window),
     relief = "flat")
 
 bs2.place(
@@ -420,7 +437,7 @@ bs3 = Button(fsetting,
     image = imgs3,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = lambda: delusr(top,window),
     relief = "flat")
 
 bs3.place(
@@ -442,6 +459,25 @@ bs4.place(
     height = 48)
 
 #----------------------------FRAME SETTING END------------------------------------
+
+#----------------------------FRAME ABOUT------------------------------------------
+canvasf = Canvas(
+    fframe,
+    bg = "#ffffff",
+    height = 432,
+    width = 797,
+    bd = 0,
+    highlightthickness = 0,
+    relief = "ridge")
+canvasf.place(x = 0, y = 0)
+
+background_imgf = PhotoImage(file = f"backgroundf.png")
+backgroundf = canvasf.create_image(
+    398.0, 207.5,
+    image=background_imgf)
+
+#-------------------------------FRAME ABOUT END-----------------------------------
+
 fgroup.place(x=215, y = 38,width=797,height=432)
 
 window.resizable(False, False)
