@@ -6,7 +6,7 @@ from passlib.hash import pbkdf2_sha256
 import os
 import runpy
 
-mydb = conn.connect(host='localhost',user = 'root',password='Sample123')
+mydb = conn.connect(host='localhost',user = 'Omni',password='Omni123')
 mycursor = mydb.cursor(buffered = True)
 
     
@@ -56,6 +56,9 @@ def deluser():
 
 window = Tk()
 top= Toplevel()
+top.iconbitmap("realomnilogo.ico")
+top.resizable(False,False)
+top.title('Omni Files')
 def de():
     top.destroy()
     window.destroy()

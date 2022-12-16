@@ -5,7 +5,7 @@ import runpy
 import os
 import sys
 from passlib.hash import pbkdf2_sha256
-mydb = conn.connect(host='localhost',user = 'root',password='Sample123')
+mydb = conn.connect(host='localhost',user = 'Omni',password='Omni123')
 mycursor = mydb.cursor(buffered = True)
 mycursor.execute("CREATE DATABASE IF NOT EXISTS omni")
 
@@ -46,6 +46,9 @@ def btn_clicked():
 
 windowr = Tk()
 topr = Toplevel()
+topr.title('Omni Files')
+topr.iconbitmap("realomnilogo.ico")
+topr.resizable(False,False)
 def de():
     topr.destroy()
     windowr.destroy()

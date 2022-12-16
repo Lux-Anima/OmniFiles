@@ -5,7 +5,8 @@ import os
 import sys
 from tkinter import messagebox
 from passlib.hash import pbkdf2_sha256
-mydb = conn.connect(host='localhost',user = 'root',password='Sample123')
+import pickle
+mydb = conn.connect(host='localhost',user = 'Omni',password='Omni123')
 mycursor = mydb.cursor()
 mycursor.execute("SHOW DATABASES LIKE 'OMNI'")
 result = mycursor.fetchall()
@@ -15,6 +16,8 @@ if not result:
     os.chdir(dirname + '/Register')
     runpy.run_path(path_name = filename)
     sys.exit()
+    
+
     
     
 
@@ -39,6 +42,8 @@ def btn_clicked():
     if che:
         global x
         x = 1
+        with open('curuser.dat','wb') as f:
+            pickle.dump(uname,f)
         de()
         os.chdir(dirname + '/Hub')
         runpy.run_path(path_name = dirname + '/Hub/hub.py' )
@@ -50,6 +55,9 @@ def btn_clicked():
 
 window = Tk()
 top = Toplevel()
+top.title('Omni Files')
+top.resizable(False,False)
+top.iconbitmap("realomnilogo.ico")
 def de():
     top.destroy()
     window.destroy()
@@ -61,8 +69,6 @@ top.protocol('WM_DELETE_WINDOW',de)
 
 
 top.geometry("1012x506")
-#windowf.config(height = 506,width = 1012)
-#windowf.wm_attributes('-transparentcolor', '#ab23ff')
 top.configure(bg = "#1c2433")
 canvas = Canvas(
     top,

@@ -3,6 +3,17 @@ import runpy
 import os
 from excutord import *
 import sys
+import threading
+
+Exist = os.path.exists('count.dat')
+if not Exist:
+    with open('count.dat','wb') as f:
+        x = 0
+        pickle.dump(x,f)
+else:
+    pass
+    
+
 
 def btn_clicked():
     print("Button Clicked")
@@ -12,6 +23,7 @@ def switchgroup():
     fmanage.place_forget()
     fsetting.place_forget()
     fframe.place_forget()
+    fdashboard.place_forget()
     fgroup.place(x=215, y = 38,width=797,height=432)
     
 def switchmanage():
@@ -19,6 +31,7 @@ def switchmanage():
     fgroup.place_forget()
     fsetting.place_forget()
     fframe.place_forget()
+    fdashboard.place_forget()
     fmanage.place(x=215, y = 38,width=797,height=432)
     
 def switchsetting():
@@ -26,14 +39,26 @@ def switchsetting():
     fmanage.place_forget()
     fgroup.place_forget()
     fframe.place_forget()
+    fdashboard.place_forget()
     fsetting.place(x=215, y = 38,width=797,height=432)
     
 def switchabout():
     fmanage.place_forget()
     fsetting.place_forget()
     fgroup.place_forget()
+    fdashboard.place_forget()
     canvas.coords(r1,0, 333, 0+7, 333+47)
     fframe.place(x=215, y = 38,width=797,height=432)
+
+def switchdashboard():
+    canvas.coords(r1,0, 133, 0+7, 133+47)
+    fmanage.place_forget()
+    fsetting.place_forget()
+    fgroup.place_forget()
+    fframe.place_forget()
+    fdashboard.place(x=215, y = 38,width=797,height=432)
+    
+    
     
     
     
@@ -42,6 +67,9 @@ def switchabout():
     
 window = Tk()
 top = Toplevel()
+top.title('Omni Files')
+top.resizable(False,False)
+top.iconbitmap("realomnilogo.ico")
 def de():
     top.destroy()
     window.destroy()
@@ -74,7 +102,7 @@ b0 = Button(top,
     image = img0,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = switchdashboard,
     relief = "flat")
 
 b0.place(
@@ -160,11 +188,65 @@ background = canvas.create_image(
 
 #---------------------------------------------HUB END-----------------------------
 
-#fdashboard = Frame(window)
+fdashboard = Frame(top,bg = "#ffffff")
 fgroup = Frame(top,bg = "#ffffff")
 fmanage = Frame(top,bg = "#ffffff")
 fsetting = Frame(top,bg ='#ffffff')
 fframe = Frame(top,bg ='#ffffff')
+
+
+#------------------------------DASHBOARD FRAME------------------------------------
+canvash = Canvas(
+    fdashboard,
+    bg = "#ffffff",
+    height = 432,
+    width = 797,
+    bd = 0,
+    highlightthickness = 0,
+    relief = "ridge")
+canvash.place(x = 0, y = 0)
+
+background_imgh = PhotoImage(file = f"backgroundh.png")
+backgroundh = canvash.create_image(
+    393.5, 205.0,
+    image=background_imgh)
+
+entryh0_img = PhotoImage(file = f"imgh_textBox0.png")
+entryh0_bg = canvash.create_image(
+    391.5, 290.5,
+    image = entryh0_img)
+
+entryh0 = Text(fdashboard,
+    bd = 0,
+    bg = "#efefef",
+    highlightthickness = 0)
+
+entryh0.place(
+    x = 57, y = 209,
+    width = 675,
+    height = 161)
+
+entryh1_img = PhotoImage(file = f"imgh_textBox1.png")
+entryh1_bg = canvash.create_image(
+    391.5, 85.0,
+    image = entryh1_img)
+
+entryh1 = Text(fdashboard,
+    bd = 0,
+    fg = '#3ebab2',
+    bg = "#efefef",
+    font=("Montserrat", 32),
+    highlightthickness = 0)
+
+entryh1.place(
+    x = 57, y = 67,
+    width = 675,
+    height = 43)
+
+history(entryh0,top)
+count(entryh1,top)
+
+#-------------------------------DASHBOARD FRAME END------------------------------
 
 
 # GROUP FRAME -------------------------------------------------
@@ -243,7 +325,7 @@ bg0 = Button(fgroup,
     image = imgg0,
     borderwidth = 0,
     highlightthickness = 0,
-    command = lambda: UniSearch(entry2,entry0),
+    command = lambda: threading.Thread(target=UniSearch(entry2,entry0)),
     relief = "flat")
 
 bg0.place(
@@ -393,7 +475,7 @@ bs0 = Button(fsetting,
     image = imgs0,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = changeperms,
     relief = "flat")
 
 bs0.place(
@@ -450,7 +532,7 @@ bs4 = Button(fsetting,
     image = imgs4,
     borderwidth = 0,
     highlightthickness = 0,
-    command = btn_clicked,
+    command = changeperms,
     relief = "flat")
 
 bs4.place(
@@ -478,7 +560,7 @@ backgroundf = canvasf.create_image(
 
 #-------------------------------FRAME ABOUT END-----------------------------------
 
-fgroup.place(x=215, y = 38,width=797,height=432)
+fdashboard.place(x=215, y = 38,width=797,height=432)
 
 window.resizable(False, False)
 window.withdraw()

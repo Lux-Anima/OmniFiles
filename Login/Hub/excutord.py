@@ -13,15 +13,13 @@ import concurrent.futures
 from send2trash import send2trash
 import threading
 import mysql.connector as conn
+from datetime import datetime
 
-    
 delf =[]
 def UniSearch(entry2,entry0):
-    #text_box.delete("1.0","end")
     pos = []
     global delf
     delf=[]
-    #searc = input("Enter search term")
     for (root,dirs, files) in os.walk(path):
         check = entry0.get()
         for f in files:
@@ -31,6 +29,7 @@ def UniSearch(entry2,entry0):
                 if check in s:
                     pos.append(f)
                     delf.append(os.path.join(root, f))
+                    
             elif '.docx' in f:
                 try:
                     
@@ -38,6 +37,7 @@ def UniSearch(entry2,entry0):
                     s = s.decode("utf-8")
 
                     if check in s:
+
                         pos.append(f)
                         delf.append(os.path.join(root, f))
                         
@@ -46,6 +46,7 @@ def UniSearch(entry2,entry0):
                     continue
     
     entry2.configure(state= NORMAL)
+    entry2.delete('1.0',END)
     entry2.insert(1.0,str(pos))
     entry2.configure(state= DISABLED)
     
@@ -53,95 +54,134 @@ def searchh(entrym0):
     global delf
     delf=[]
     path = entrym0.get().lstrip('Directory: ')
-    #searc = input("Enter search term")
     for (root,dirs, files) in os.walk(path):
         for f in files:
             delf.append(os.path.join(root, f))
     
 def Delete(entrym0):
-    searchh(entrym0)
-    for i in delf:
-        if os.path.isfile(i):            
-           deleteme()
-        else:    ## Show an error ##
-             pass
-def deleteme():
+    if entrym0.get() == '':
+        messagebox.showinfo('Info','Group not chosen')
+    else:
+        searchh(entrym0)
+        numb = len(delf)
+        with open('count.dat','rb+') as f:
+            x = pickle.load(f)
+            tot = x + numb
+            f.seek(0)
+            pickle.dump(tot,f)
+        for i in delf:
+            if os.path.isfile(i):            
+               deleteme(entrym0)
+            else:
+                 pass        
+   
+def deleteme(entrym0):
     result = messagebox.askquestion("Delete", "Are You Sure?", icon='warning')
     if result == 'yes':
+        p = entrym0.get()
+        log('Delete',p.lstrip('Directory: '))
         for i in delf:
            i = i.replace('/','\\')
            send2trash(i)
-        print ("Deleted")
     else:
-        print ("I'm Not Deleted Yet")
-    
+        pass
    
 def encr(entrym0):
-    delf = []
-    result = messagebox.askquestion('Choice','Use already existing key?')
-    if result == 'yes':
+    if entrym0.get() == '':
+        messagebox.showinfo('Info','Group not chosen')
+    else:
+        delf = []
+        result = messagebox.askquestion('Choice','Use already existing key?')
+        if result == 'yes':
+            messagebox.showinfo('Info','Choose the location of the key')
+            x = filedialog.askopenfile()
+            pat = entrym0.get()
+            path = pat.lstrip('Directory: ')
+            kname = path.split('/')[-2]
+            keyloc = os.path.abspath(x.name)
+            log('Encrypt',path)
+            with open(keyloc ,'rb') as l:
+                key = pickle.load(l)
+            for (root,dirs, files) in os.walk(path):
+                for f in files:
+                    delf.append(os.path.join(root, f))
+            numb = len(delf)
+            with open('count.dat','rb+') as f:
+                x = pickle.load(f)
+                tot = x + numb
+                f.seek(0)
+                pickle.dump(tot,f)
+            for i in delf:
+                with open(i,'rb+') as f:
+                        x = f.read()
+                        e = Fernet(key)
+                        edat = e.encrypt(x)
+                        f.seek(0)
+                        f.write(edat)
+                
+        else:
+              delf  = []
+              key = Fernet.generate_key()
+              messagebox.showinfo('Info','Choose location to store new key')
+              keyloc = filedialog.askdirectory()
+              pat = entrym0.get()
+              path = pat.lstrip('Directory: ')
+              kname = path.split('/')[-1]
+              log('Encrypt',path)
+              with open(keyloc +'/' + kname + '.dat','wb') as l:
+                  pickle.dump(key,l)
+              
+              for (root,dirs, files) in os.walk(path):
+                  for f in files:
+                      delf.append(os.path.join(root, f))
+              numb = len(delf)
+              with open('count.dat','rb+') as f:
+                  x = pickle.load(f)
+                  tot = x + numb
+                  f.seek(0)
+                  pickle.dump(tot,f)
+              for i in delf:
+                  with open(i,'rb+') as f:
+                          x = f.read()
+                          e = Fernet(key)
+                          edat = e.encrypt(x)
+                          f.seek(0)
+                          f.write(edat)
+        
+    
+            
+def decr(entrym0):
+    if entrym0.get() == '':
+        messagebox.showinfo('Info','Group not chosen')
+    else:
+        delf  = []
         messagebox.showinfo('Info','Choose the location of the key')
         x = filedialog.askopenfile()
+        keyloc = os.path.abspath(x.name)
         pat = entrym0.get()
         path = pat.lstrip('Directory: ')
-        kname = path.split('/')[-2]
-        keyloc = os.path.abspath(x.name)
+        log('Decrypt',path)
         with open(keyloc ,'rb') as l:
             key = pickle.load(l)
+        
         for (root,dirs, files) in os.walk(path):
             for f in files:
                 delf.append(os.path.join(root, f))
+        numb = len(delf)
+        with open('count.dat','rb+') as f:
+            x = pickle.load(f)
+            tot = x + numb
+            f.seek(0)
+            pickle.dump(tot,f)
         for i in delf:
             with open(i,'rb+') as f:
                     x = f.read()
                     e = Fernet(key)
-                    edat = e.encrypt(x)
+                    edat = e.decrypt(x)
                     f.seek(0)
+                    f.truncate()
                     f.write(edat)
-            
-    else:
-          delf  = []
-          key = Fernet.generate_key()
-          messagebox.showinfo('Info','Choose location to store new key')
-          keyloc = filedialog.askdirectory()
-          pat = entrym0.get()
-          path = pat.lstrip('Directory: ')
-          kname = path.split('/')[-1]
-          with open(keyloc +'/' + kname + '.dat','wb') as l:
-              pickle.dump(key,l)
-          
-          for (root,dirs, files) in os.walk(path):
-              for f in files:
-                  delf.append(os.path.join(root, f))
-          for i in delf:
-              with open(i,'rb+') as f:
-                      x = f.read()
-                      e = Fernet(key)
-                      edat = e.encrypt(x)
-                      f.seek(0)
-                      f.write(edat)
-            
-def decr(entrym0):
-    delf  = []
-    messagebox.showinfo('Info','Choose the location of the key')
-    x = filedialog.askopenfile()
-    keyloc = os.path.abspath(x.name)
-    pat = entrym0.get()
-    path = pat.lstrip('Directory: ')
-    with open(keyloc ,'rb') as l:
-        key = pickle.load(l)
     
-    for (root,dirs, files) in os.walk(path):
-        for f in files:
-            delf.append(os.path.join(root, f))
-    for i in delf:
-        with open(i,'rb+') as f:
-                x = f.read()
-                e = Fernet(key)
-                edat = e.decrypt(x)
-                f.seek(0)
-                f.truncate()
-                f.write(edat)
                 
 def checking():
     try:
@@ -172,9 +212,25 @@ def group(entry3):
     x = os.getlogin()
     dest = 'C:\\Users\\' + x + '\\OmniGroups' + '\\'+name
     os.makedirs(dest)
+    numb = len(delf)
+    with open('count.dat','rb+') as f:
+        x = pickle.load(f)
+        tot = x + numb
+        f.seek(0)
+        pickle.dump(tot,f)
+    log('Group('+name+')Created','BasedOnSearchTerm')
+        
     for i in delf:
         shutil.copy2(i, dest)
-
+    result = messagebox.askquestion('Choice','Do you want to delete the originals?')
+    if result == 'yes':
+        for i in delf:
+           i = i.replace('/','\\')
+           send2trash(i)
+    else:
+        pass
+        
+    
 
 def addusr(top,window):
     x = os.getcwd()
@@ -198,6 +254,9 @@ def delusr(top,window):
     sys.exit()
     
 def logout(top,window):
+    p = os.getcwd().rstrip('Hub') + 'curuser.dat'
+    with open(p,'wb') as f:
+        pickle.dump('',f)    
     dirname = os.getcwd()
     filen = dirname.rstrip('/Hub')
     filename = filen + '/login.py'
@@ -206,6 +265,60 @@ def logout(top,window):
     os.chdir(filen)
     runpy.run_path(path_name = filename)
     sys.exit()
+    
+def log(func,group):
+    p = os.getcwd().rstrip('Hub') + 'curuser.dat'
+    with open(p,'rb') as f:
+        user = pickle.load(f)
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    text = dt_string +' User:' + user + ' Action:'  + func + ' Target:' + group
+    with open('Log.dat','ab') as f:
+        pickle.dump(text,f)
+
+       
+
+def history(entryh0,top):
+    lst = []
+    try:
+        with open('Log.dat', 'rb') as f:
+            entryh0.configure(state= NORMAL)
+            entryh0.delete('1.0',END)
+            while True:
+                try:
+                    x = pickle.load(f)
+                    lst.append(x)
+                except:
+                    break
+        for i in lst[::-1]:
+            entryh0.configure(state= NORMAL)
+            entryh0.insert(END, i +'\n')
+            entryh0.configure(state= DISABLED)
+        top.after(1500,lambda: history(entryh0,top))
+    except:
+        top.after(2000,lambda: history(entryh0,top))
+        
+def count(entryh1,top):
+    try:
+        with open('count.dat','rb') as f:
+            entryh1.configure(state= NORMAL)
+            entryh1.delete('1.0',END)
+            total = pickle.load(f)
+            entryh1.insert('1.0',str(total))
+            entryh1.configure(state= DISABLED)
+        top.after(500,lambda: count(entryh1,top))
+    except:
+        top.after(700,lambda: count(entryh1,top))
+            
+def changeperms():
+    messagebox.showinfo('Info','Still in Development. Will be available in a future update')
+      
+    
+    
+        
+    
+
+    
 
 
 
